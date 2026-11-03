@@ -84,7 +84,7 @@ export default function RegisterPage() {
             <span>JOIN THE ROSTER</span>
           </div>
           <h1 className="text-3xl font-semibold text-neutral-900 dark:text-white tracking-tight">
-            Register on KURA // StudioSpace
+            Register on StudioSpace
           </h1>
           <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-normal">
             Join thousands of photographers, filmmakers, and studio hosts.

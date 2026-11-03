@@ -70,7 +70,7 @@ export default function HowItWorksPage() {
           <span>PRODUCTION WORKFLOW</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-semibold text-neutral-900 dark:text-white tracking-tight">
-          How KURA // StudioSpace Operates
+          How StudioSpace Operates
         </h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed font-normal">
           A peer-to-peer marketplace engineered specifically for production efficiency. Discover how simple it is to book production hours or monetize your creative space.

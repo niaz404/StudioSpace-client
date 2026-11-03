@@ -7,7 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Toaster } from 'sonner';
 
 export const metadata = {
-  title: 'KURA // StudioSpace — Peer-to-Peer Production Studios',
+  title: 'StudioSpace — Peer-to-Peer Creative Workspaces & Production Studios',
   description:
     'Discover and book daylight photography cyc walls, cinema sound stages, podcast lounges, and music suites with transparent hourly pricing.',
 };

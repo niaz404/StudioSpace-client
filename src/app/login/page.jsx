@@ -84,7 +84,7 @@ function LoginForm() {
             <span>AUTHENTICATION</span>
           </div>
           <h1 className="text-3xl font-semibold text-neutral-900 dark:text-white tracking-tight">
-            Log In to KURA // StudioSpace
+            Log In to StudioSpace
           </h1>
           <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-normal">
             Access your production reservations, studio listings, and saved spaces.

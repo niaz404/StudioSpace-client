@@ -14,7 +14,7 @@ export const Footer = () => {
       toast.error('Please enter a valid email address.');
       return;
     }
-    toast.success('Thank you for subscribing to KURA // StudioSpace updates!');
+    toast.success('Thank you for subscribing to StudioSpace updates!');
     setEmail('');
   };
 
@@ -60,16 +60,16 @@ export const Footer = () => {
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-bold tracking-tight text-neutral-900 dark:text-white">
-                  KURA <span className="font-light text-neutral-400">/</span> <span className="text-amber-500">StudioSpace</span>
+                  Studio<span className="text-amber-500">Space</span>
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-500 font-medium -mt-0.5">
-                  Production Workspaces
+                <span className="text-[11px] text-neutral-500 dark:text-neutral-400 tracking-normal font-medium -mt-0.5">
+                  Creative Workspaces
                 </span>
               </div>
             </Link>
 
             <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-sm leading-relaxed font-sans">
-              KURA // StudioSpace is a peer-to-peer creative workspace platform connecting photographers, filmmakers, podcasters, and musicians with production studios, sound stages, and rehearsal rooms.
+              StudioSpace is a peer-to-peer creative workspace platform connecting photographers, filmmakers, podcasters, and musicians with production studios, sound stages, and rehearsal rooms.
             </p>
 
             <div className="flex items-center space-x-3 pt-2">
@@ -175,7 +175,7 @@ export const Footer = () => {
 
         <div className="pt-8 border-t border-neutral-200/80 dark:border-neutral-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 gap-4">
           <p className="font-mono text-[11px]">
-            &copy; {new Date().getFullYear()} KURA // StudioSpace Platform · B14-A8-Cat_Harry. All rights reserved.
+            &copy; {new Date().getFullYear()} StudioSpace Platform · B14-A8-Cat_Harry. All rights reserved.
           </p>
           <div className="flex items-center space-x-6 text-[11px] font-mono">
             <span>Next.js 15 App Router</span>

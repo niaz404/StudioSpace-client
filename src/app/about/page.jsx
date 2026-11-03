@@ -20,7 +20,7 @@ export default function AboutPage() {
     },
     {
       title: 'Peer-to-Peer Production Efficiency',
-      desc: 'Traditional commercial rental agencies charge steep broker commissions. KURA // StudioSpace connects creators directly with facility owners, keeping hourly rates affordable and host returns maximized.',
+      desc: 'Traditional commercial rental agencies charge steep broker commissions. StudioSpace connects creators directly with facility owners, keeping hourly rates affordable and host returns maximized.',
       icon: HeartHandshake,
     },
     {
@@ -35,7 +35,7 @@ export default function AboutPage() {
       <div className="text-center max-w-2xl mx-auto space-y-3">
         <div className="inline-flex items-center space-x-2 text-xs font-mono uppercase tracking-widest text-amber-600 dark:text-amber-500 font-semibold">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-          <span>ABOUT KURA // STUDIOSPACE</span>
+          <span>ABOUT STUDIOSPACE</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-semibold text-neutral-900 dark:text-white tracking-tight">
           Connecting Visionaries with Architectural Workspaces
@@ -91,7 +91,7 @@ export default function AboutPage() {
           </div>
           <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight">Have an architectural studio to share?</h3>
           <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed font-normal">
-            Join hundreds of photography lofts, recording facilities, and soundstages earning consistent production revenue through KURA // StudioSpace.
+            Join hundreds of photography lofts, recording facilities, and soundstages earning consistent production revenue through StudioSpace.
           </p>
         </div>
         <Link

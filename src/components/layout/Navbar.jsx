@@ -85,10 +85,10 @@ export const Navbar = () => {
 
             <div className="flex flex-col">
               <span className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
-                KURA <span className="font-light text-neutral-400">/</span> <span className="text-amber-500">StudioSpace</span>
+                Studio<span className="text-amber-500">Space</span>
               </span>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-500 font-medium -mt-0.5">
-                Production Workspaces
+              <span className="text-[11px] text-neutral-500 dark:text-neutral-400 tracking-normal font-medium -mt-0.5">
+                Creative Workspaces
               </span>
             </div>
           </Link>
