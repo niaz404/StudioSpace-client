@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { auth, googleProvider } from '@/lib/firebase';
 
 const AuthContext = createContext();
 
@@ -106,17 +107,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const googleLogin = async (
-    name = 'Creative Member',
-    email = 'google.creator@studiospace.io',
-    photoURL = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
-  ) => {
+  const googleLogin = async (fallbackName, fallbackEmail, fallbackPhoto) => {
     try {
+      let displayName = fallbackName || 'Google Creator';
+      let email = fallbackEmail || 'google.creator@studiospace.io';
+      let photoURL =
+        fallbackPhoto ||
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
+
+      if (auth && googleProvider) {
+        const { signInWithPopup } = await import('firebase/auth');
+        const result = await signInWithPopup(auth, googleProvider);
+        if (result && result.user) {
+          displayName = result.user.displayName || displayName;
+          email = result.user.email || email;
+          photoURL = result.user.photoURL || photoURL;
+        }
+      }
+
       const res = await fetch(`${API_BASE}/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ name, email, photoURL }),
+        body: JSON.stringify({ name: displayName, email, photoURL }),
       });
 
       const data = await res.json();
@@ -134,7 +147,11 @@ export const AuthProvider = ({ children }) => {
       toast.success(`Welcome, ${data.user.name}!`);
       return true;
     } catch (err) {
-      toast.error('Network error during Google login.');
+      if (err.code === 'auth/popup-closed-by-user') {
+        toast.info('Google sign-in window was closed.');
+        return false;
+      }
+      toast.error(err.message || 'Error during Google sign-in.');
       return false;
     }
   };
