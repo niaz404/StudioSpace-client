@@ -1,6 +1,6 @@
 # StudioSpace — Creative Workspace Sharing Platform
 **Assignment Submission:** B14-A8-Cat_Harry  
-**Live Website URL:** [https://studiospace-platform.vercel.app](https://studiospace-platform.vercel.app) *(Deploy URL placeholder)*  
+**Live Website URL:** [https://studio-space-client-virid.vercel.app](https://studio-space-client-virid.vercel.app)  
 **Server Backend Repository:** [../server](../server)
 
 ---
