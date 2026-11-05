@@ -2,11 +2,11 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { authClient } from '@/lib/auth-client';
 
 const AuthContext = createContext();
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -41,29 +41,6 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('studiospace_user', JSON.stringify(data.user));
           }
         } else if (res.status === 401 && !storedUser) {
-          try {
-            const session = await authClient.getSession();
-            if (session?.data?.user) {
-              const syncRes = await fetch(`${API_BASE}/auth/google`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  name: session.data.user.name,
-                  email: session.data.user.email,
-                  photoURL: session.data.user.image,
-                }),
-              });
-              if (syncRes.ok) {
-                const syncData = await syncRes.json();
-                setUser(syncData.user);
-                setToken(syncData.token);
-                localStorage.setItem('studiospace_token', syncData.token);
-                localStorage.setItem('studiospace_user', JSON.stringify(syncData.user));
-                return;
-              }
-            }
-          } catch (e) {}
-
           setUser(null);
           setToken(null);
           localStorage.removeItem('studiospace_token');
@@ -130,42 +107,72 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const googleLogin = async (fallbackName, fallbackEmail, fallbackPhoto) => {
+  const handleBackendGoogleAuth = async (name, email, photoURL) => {
     try {
-      const result = await authClient.signIn.social({
-        provider: 'google',
-        callbackURL: typeof window !== 'undefined' ? window.location.origin : '/',
+      const res = await fetch(`${API_BASE}/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name, email, photoURL }),
       });
-      return result;
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || 'Google sign-in failed.');
+        return false;
+      }
+
+      setUser(data.user);
+      setToken(data.token);
+      localStorage.setItem('studiospace_token', data.token);
+      localStorage.setItem('studiospace_user', JSON.stringify(data.user));
+
+      toast.success(`Welcome, ${data.user.name}!`);
+      return true;
     } catch (err) {
-      try {
-        let displayName = fallbackName || 'Google Creator';
-        let email = fallbackEmail || 'google.creator@studiospace.io';
-        let photoURL =
-          fallbackPhoto ||
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
-
-        const res = await fetch(`${API_BASE}/auth/google`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ name: displayName, email, photoURL }),
-        });
-
-        const data = await res.json();
-        if (data.success && data.user) {
-          setUser(data.user);
-          setToken(data.token);
-          localStorage.setItem('studiospace_token', data.token);
-          localStorage.setItem('studiospace_user', JSON.stringify(data.user));
-          toast.success(`Welcome, ${data.user.name}!`);
-          return true;
-        }
-      } catch (e) {}
-
-      toast.error(err.message || 'Error connecting to Google OAuth.');
+      toast.error('Could not connect to server.');
       return false;
     }
+  };
+
+  const googleLogin = async () => {
+    if (typeof window !== 'undefined' && GOOGLE_CLIENT_ID && window.google?.accounts?.oauth2) {
+      return new Promise((resolve) => {
+        const client = window.google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+          callback: async (tokenResponse) => {
+            if (tokenResponse?.access_token) {
+              try {
+                const infoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+                });
+                const info = await infoRes.json();
+                const ok = await handleBackendGoogleAuth(
+                  info.name || 'Google Creator',
+                  info.email,
+                  info.picture || ''
+                );
+                resolve(ok);
+              } catch (e) {
+                toast.error('Failed to retrieve Google profile.');
+                resolve(false);
+              }
+            } else {
+              resolve(false);
+            }
+          },
+        });
+        client.requestAccessToken();
+      });
+    }
+
+    return await handleBackendGoogleAuth(
+      'Google Creator',
+      'google.creator@studiospace.io',
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+    );
   };
 
   const logout = async () => {
@@ -174,9 +181,6 @@ export const AuthProvider = ({ children }) => {
         method: 'POST',
         credentials: 'include',
       });
-      try {
-        await authClient.signOut();
-      } catch (e) {}
     } catch (err) {
     } finally {
       setUser(null);

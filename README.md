@@ -51,12 +51,7 @@ A `.env.local` template is provided (`.env.example`):
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
-# Better Auth & Google OAuth (Optional)
-BETTER_AUTH_SECRET=your_better_auth_secret
-BETTER_AUTH_URL=http://localhost:3000
-GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/studiospace?retryWrites=true&w=majority
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 ```
 
 ### 4. Start the development server:

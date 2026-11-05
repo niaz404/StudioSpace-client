@@ -1,4 +1,5 @@
 import './globals.css';
+import Script from 'next/script';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { WishlistProvider } from '@/context/WishlistContext';
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className="antialiased min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-white">
+        <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
         <ThemeProvider>
           <AuthProvider>
             <WishlistProvider>
