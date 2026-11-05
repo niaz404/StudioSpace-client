@@ -1,7 +1,9 @@
 # StudioSpace — Creative Workspace Sharing Platform
 **Assignment Submission:** B14-A8-Cat_Harry  
 **Live Website URL:** [https://studio-space-client-virid.vercel.app](https://studio-space-client-virid.vercel.app)  
-**Server Backend Repository:** [../server](../server)
+**Live Server API:** [https://studiospace-server-akpa.onrender.com](https://studiospace-server-akpa.onrender.com)  
+**Client Repository:** [https://github.com/niaz404/StudioSpace-client](https://github.com/niaz404/StudioSpace-client)  
+**Server Repository:** [https://github.com/niaz404/StudioSpace-server](https://github.com/niaz404/StudioSpace-server)
 
 ---
 
