@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { auth, googleProvider } from '@/lib/firebase';
+import { authClient } from '@/lib/auth-client';
 
 const AuthContext = createContext();
 
@@ -41,6 +41,29 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('studiospace_user', JSON.stringify(data.user));
           }
         } else if (res.status === 401 && !storedUser) {
+          try {
+            const session = await authClient.getSession();
+            if (session?.data?.user) {
+              const syncRes = await fetch(`${API_BASE}/auth/google`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  name: session.data.user.name,
+                  email: session.data.user.email,
+                  photoURL: session.data.user.image,
+                }),
+              });
+              if (syncRes.ok) {
+                const syncData = await syncRes.json();
+                setUser(syncData.user);
+                setToken(syncData.token);
+                localStorage.setItem('studiospace_token', syncData.token);
+                localStorage.setItem('studiospace_user', JSON.stringify(syncData.user));
+                return;
+              }
+            }
+          } catch (e) {}
+
           setUser(null);
           setToken(null);
           localStorage.removeItem('studiospace_token');
@@ -67,7 +90,7 @@ export const AuthProvider = ({ children }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.message || 'Login failed. Please check your credentials.');
+        toast.error(data.message || 'Login failed.');
         return false;
       }
 
@@ -76,7 +99,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('studiospace_token', data.token);
       localStorage.setItem('studiospace_user', JSON.stringify(data.user));
 
-      toast.success(data.message || `Welcome back, ${data.user.name}!`);
+      toast.success(`Welcome back, ${data.user.name}!`);
       return true;
     } catch (err) {
       toast.error('Could not connect to server.');
@@ -109,49 +132,38 @@ export const AuthProvider = ({ children }) => {
 
   const googleLogin = async (fallbackName, fallbackEmail, fallbackPhoto) => {
     try {
-      let displayName = fallbackName || 'Google Creator';
-      let email = fallbackEmail || 'google.creator@studiospace.io';
-      let photoURL =
-        fallbackPhoto ||
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
-
-      if (auth && googleProvider) {
-        const { signInWithPopup } = await import('firebase/auth');
-        const result = await signInWithPopup(auth, googleProvider);
-        if (result && result.user) {
-          displayName = result.user.displayName || displayName;
-          email = result.user.email || email;
-          photoURL = result.user.photoURL || photoURL;
-        }
-      }
-
-      const res = await fetch(`${API_BASE}/auth/google`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ name: displayName, email, photoURL }),
+      const result = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: typeof window !== 'undefined' ? window.location.origin : '/',
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        toast.error(data.message || 'Google sign-in failed.');
-        return false;
-      }
-
-      setUser(data.user);
-      setToken(data.token);
-      localStorage.setItem('studiospace_token', data.token);
-      localStorage.setItem('studiospace_user', JSON.stringify(data.user));
-
-      toast.success(`Welcome, ${data.user.name}!`);
-      return true;
+      return result;
     } catch (err) {
-      if (err.code === 'auth/popup-closed-by-user') {
-        toast.info('Google sign-in window was closed.');
-        return false;
-      }
-      toast.error(err.message || 'Error during Google sign-in.');
+      try {
+        let displayName = fallbackName || 'Google Creator';
+        let email = fallbackEmail || 'google.creator@studiospace.io';
+        let photoURL =
+          fallbackPhoto ||
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
+
+        const res = await fetch(`${API_BASE}/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ name: displayName, email, photoURL }),
+        });
+
+        const data = await res.json();
+        if (data.success && data.user) {
+          setUser(data.user);
+          setToken(data.token);
+          localStorage.setItem('studiospace_token', data.token);
+          localStorage.setItem('studiospace_user', JSON.stringify(data.user));
+          toast.success(`Welcome, ${data.user.name}!`);
+          return true;
+        }
+      } catch (e) {}
+
+      toast.error(err.message || 'Error connecting to Google OAuth.');
       return false;
     }
   };
@@ -162,13 +174,16 @@ export const AuthProvider = ({ children }) => {
         method: 'POST',
         credentials: 'include',
       });
-    } catch (e) {
+      try {
+        await authClient.signOut();
+      } catch (e) {}
+    } catch (err) {
     } finally {
       setUser(null);
       setToken(null);
       localStorage.removeItem('studiospace_token');
       localStorage.removeItem('studiospace_user');
-      toast.info('You have logged out.');
+      toast.success('You have logged out.');
     }
   };
 
@@ -176,12 +191,14 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
-        loading,
         token,
+        loading,
         login,
         register,
         googleLogin,
         logout,
+        isAuthenticated: !!user,
+        isHost: user?.role === 'host',
       }}
     >
       {children}
