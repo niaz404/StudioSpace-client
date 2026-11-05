@@ -10,6 +10,13 @@ export const metadata = {
   title: 'StudioSpace — Peer-to-Peer Creative Workspaces & Production Studios',
   description:
     'Discover and book daylight photography cyc walls, cinema sound stages, podcast lounges, and music suites with transparent hourly pricing.',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    apple: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({ children }) {
